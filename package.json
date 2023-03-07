@@ -1,0 +1,23 @@
+{
+  "name": "vide-desktop",
+  "version": "0.0.1",
+  "description": "Vide Image viewer",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/PolymerCo/vide.git"
+  },
+  "keywords": [
+    "image",
+    "viewer"
+  ],
+  "author": "Polymer Co.",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/PolymerCo/vide/issues"
+  },
+  "homepage": "https://github.com/PolymerCo/vide#readme"
+}
