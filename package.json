@@ -2,8 +2,10 @@
   "name": "vide-desktop",
   "version": "0.0.1",
   "description": "Vide Image viewer",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
+    "build": "tsc",
+    "start": "electron dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -19,5 +21,13 @@
   "bugs": {
     "url": "https://github.com/PolymerCo/vide/issues"
   },
-  "homepage": "https://github.com/PolymerCo/vide#readme"
+  "homepage": "https://github.com/PolymerCo/vide#readme",
+  "devDependencies": {
+    "@types/electron": "^1.6.10",
+    "@types/http-cache-semantics": "*",
+    "@types/node": "^16.18.14",
+    "electron": "^23.1.2",
+    "prettier": "^2.8.4",
+    "typescript": "^4.9.5"
+  }
 }
