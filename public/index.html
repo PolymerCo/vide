@@ -1,0 +1,28 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="client.css">
+    <script>var exports = {};</script>
+    <script src="vue.js"></script>
+    <script defer src="client.js"></script>
+    <script defer src="fa/sharp-regular.min.js"></script>
+    <script defer src='fa/fontawesome.min.js'></script>
+  </head>
+  <body>
+    <div id='app'>
+      <p>{{ validatedFileUrl == true }}</p>
+      <p>{{ isFileLoaded }}</p>
+      <div class='file-load-dialog' v-if='!isFileLoaded'>
+        <button @click='openFileDialog'>
+          <i class="fa-sharp fa-regular fa-file-image"></i>
+        </button>
+      </div>
+      <div class='file-viewer' v-else>
+
+      </div>
+    </div>
+  </body>
+</html>
