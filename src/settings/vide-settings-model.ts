@@ -21,7 +21,11 @@ export interface VideSettingsModel {
   /**
    * The default size of the window when no image is present.
    * The size is measured from the left to right, top to bottom, of the window respective to the given x and y values.
-   * Units of measurement are in decimal percents of the monitor size.
+   * Units of measurement are in pixels.
    */
   defaultWindowSize: Electron.Point
+  /**
+   * List of allowed extensions for images.
+   */
+  imageExtensions: string[]
 }
