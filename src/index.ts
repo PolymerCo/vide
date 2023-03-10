@@ -1,6 +1,8 @@
 import { app } from 'electron'
-import { VideWindowController } from './vide-window/vide-window-controller'
+import { VideSettings } from './settings/vide-settings'
+import { VideController } from './vide-controller'
+import { WindowStateService } from './vide-window/window-state-service'
 
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 
-new VideWindowController(app)
+new VideController(app, new VideSettings(), new WindowStateService())

@@ -1,27 +1,48 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang='en'>
   <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="client.css">
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <link rel='stylesheet' href='client.css'>
     <script>var exports = {};</script>
-    <script src="vue.js"></script>
-    <script defer src="client.js"></script>
-    <script defer src="fa/sharp-regular.min.js"></script>
+    <script src='vue.js'></script>
+    <script defer src='client.js'></script>
+    <script defer src='fa/sharp-regular.min.js'></script>
     <script defer src='fa/fontawesome.min.js'></script>
   </head>
   <body>
     <div id='app'>
-      <p>{{ validatedFileUrl == true }}</p>
-      <p>{{ isFileLoaded }}</p>
-      <div class='file-load-dialog' v-if='!isFileLoaded'>
-        <button @click='openFileDialog'>
-          <i class="fa-sharp fa-regular fa-file-image"></i>
+      <div class='titlebar' :style='titleBarStyle' v-if='!settings.showDecorations'>
+        <button class='btn' id='open' @click='openFileDialog' v-if='isFileLoaded'>
+          <i class="fa-sharp fa-regular fa-arrows-repeat"></i>
+        </button>
+        <div id='drag-area'></div>
+        <button class='btn' id='minimize' @click='requestMinimize'>
+          <i class="fa-sharp fa-regular fa-window-minimize"></i>
+        </button>
+        <button class='btn' id='fullscreen' @click='requestMaxiMiniMize'>
+          <div class='wrapper' v-if='isWindowMaximized'>
+            <i class="fa-sharp fa-regular fa-compress"></i>
+          </div>
+          <div class='wrapper' v-else>
+            <i class="fa-sharp fa-regular fa-expand"></i>
+          </div>
+        </button>
+        <button class='btn' id='close' @click='requestClose'>
+          <i class="fa-sharp fa-regular fa-xmark-large"></i>
         </button>
       </div>
-      <div class='file-viewer' v-else>
-
+      <div class='file-load-dialog' v-if='!isFileLoaded'>
+        <button id='open-file' @click='openFileDialog' :disabled='isRequestingFileOpen'>
+          <i class='fa-sharp fa-regular fa-file-image'></i>
+        </button>
+      </div>
+      <div class='content-viewer' :style='contentViewerStyle' v-else>
+        <img :src='validatedFileUrl'/>
+      </div>
+      <div class='status-bar' :style='statusBarStyle' v-if='isFileLoaded'>
+        
       </div>
     </div>
   </body>

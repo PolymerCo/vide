@@ -1,14 +1,17 @@
-import { IpcMain, ipcRenderer, IpcRenderer, IpcRendererEvent } from 'electron'
+import { BrowserWindow, IpcRenderer, IpcRendererEvent } from 'electron'
 import { FileSelectionResult } from '../file/file-selection-result'
 import { VideSettingsModel } from '../settings/vide-settings-model'
-import { VideWindowModelUpdateHandler } from '../vide-window/vide-window-model-update-handler'
 import { VideWindowModel } from '../vide-window/vide-window-model'
 import {
-  MODEL_UPDATED,
+  MAXIMIZED_STATUS_CHANGED,
+  REQUEST_FILE_DETAILS,
   REQUEST_OPEN_FILE,
   REQUEST_SETTINGS,
+  REQUEST_WINDOW_STATE_CHANGE,
 } from './ipc-constants'
 import { IpcInterface } from './ipc-interface'
+import { WindowStateChange } from '../vide-window/window-state-change'
+import { ImageFileDetails } from '../file/image-file-details'
 
 /**
  * Provides functionality of IPC communication for the renderer.
@@ -19,9 +22,9 @@ export class IpcRendererInterface implements IpcInterface {
    */
   private ipc: IpcRenderer
   /**
-   * Update handler for the model.
+   * Observers that are observing a fullscreen status change.
    */
-  private modelUpdateHandler: VideWindowModelUpdateHandler
+  private onMaximizedStatusChangedObservers: ((state: boolean) => void)[] = []
 
   /**
    * IPC exposure for preload.
@@ -29,34 +32,47 @@ export class IpcRendererInterface implements IpcInterface {
   public readonly ipcExpose = {
     requestOpenFile: () => this.requestOpenFile(),
     requestSettings: () => this.requestSettings(),
+    requestWindowStateChange: (state: WindowStateChange) =>
+      this.requestWindowStateChange(state),
+    maximizedStatusChanged: (callback: (state: boolean) => void) =>
+      this.maximizedStatusChanged(callback),
+    requestFileDetails: (path: string) => this.requestFileDetails(path),
   }
 
-  constructor(
-    ipc: IpcRenderer,
-    modelUpdateHandler: VideWindowModelUpdateHandler
-  ) {
+  constructor(ipc: IpcRenderer) {
     this.ipc = ipc
-    this.modelUpdateHandler = modelUpdateHandler
 
-    this.registerIpc()
+    this.setupIpc()
   }
 
-  private registerIpc() {
-    this.ipc.on(MODEL_UPDATED, (_, data) => {
-      const model = data as VideWindowModel
-      this.windowModelUpdated(model)
-    })
+  private setupIpc() {
+    this.ipc.on(
+      MAXIMIZED_STATUS_CHANGED,
+      (_: IpcRendererEvent, state: boolean) => {
+        this.onMaximizedStatusChangedObservers.forEach(observer =>
+          observer(state)
+        )
+      }
+    )
   }
 
   public async requestOpenFile(): Promise<FileSelectionResult> {
-    return (await this.ipc.invoke(REQUEST_OPEN_FILE)) as FileSelectionResult
+    return this.ipc.invoke(REQUEST_OPEN_FILE)
   }
 
-  public async requestSettings(): Promise<VideSettingsModel> {
-    throw (await this.ipc.invoke(REQUEST_SETTINGS)) as VideSettingsModel
+  public requestSettings(): Promise<VideSettingsModel> {
+    return this.ipc.invoke(REQUEST_SETTINGS)
   }
 
-  windowModelUpdated(model: VideWindowModel) {
-    this.modelUpdateHandler.model = model
+  public requestWindowStateChange(state: WindowStateChange): void {
+    this.ipc.invoke(REQUEST_WINDOW_STATE_CHANGE, state)
+  }
+
+  public maximizedStatusChanged(callback: (state: boolean) => void): void {
+    this.onMaximizedStatusChangedObservers.push(callback)
+  }
+
+  public requestFileDetails(path: string): Promise<ImageFileDetails> {
+    return this.ipc.invoke(REQUEST_FILE_DETAILS, path)
   }
 }

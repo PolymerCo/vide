@@ -1,7 +1,6 @@
-import { App, BrowserWindow, ipcMain, Point, screen } from 'electron'
+import { BrowserWindow, Point, Size } from 'electron'
 import { DimensionService } from '../dimension-service'
 import { INDEX_HTML_PATH, PRELOAD_PATH } from '../file-paths'
-import { FileService } from '../file/file-service'
 import { IpcMainHandler } from '../ipc/ipc-main-handler'
 import { VideSettings } from '../settings/vide-settings'
 
@@ -10,34 +9,33 @@ import { VideSettings } from '../settings/vide-settings'
  */
 export class VideWindowController {
   /**
-   * Electron app instance.
-   */
-  private app: App
-  /**
-   * Settings for the app.
-   */
-  private settings?: VideSettings
-  /**
    * Dimension service.
    */
-  private dimensionService?: DimensionService
+  private dimensionService: DimensionService
   /**
-   * File service.
+   * Settings instance.
    */
-  private fileService?: FileService
+  private settings: VideSettings
+  /**
+   * IPC handler instance.
+   */
+  private ipc: IpcMainHandler
+
   /**
    * Window of the app.
    */
   private window?: BrowserWindow
-  /**
-   * IPC handler.
-   */
-  private ipcMainHandler?: IpcMainHandler
 
-  constructor(app: App) {
-    this.app = app
-    this.app.whenReady().then(this.onAppReady.bind(this))
-    this.app.on('window-all-closed', this.onWindowAllClosed.bind(this))
+  constructor(
+    settings: VideSettings,
+    dimensionService: DimensionService,
+    ipc: IpcMainHandler
+  ) {
+    this.settings = settings
+    this.dimensionService = dimensionService
+    this.ipc = ipc
+
+    this.createWindow()
   }
 
   /**
@@ -45,7 +43,7 @@ export class VideWindowController {
    * @param point point to center on.
    * @param window window to center.
    */
-  public static centerWindowAt(point: Point, window: BrowserWindow) {
+  public centerWindowAt(point: Point, window: BrowserWindow) {
     if (!window) return
 
     const currentBounds = window.getBounds()
@@ -57,30 +55,32 @@ export class VideWindowController {
   }
 
   /**
-   * Runs once when the application is in a ready state.
+   * Sets the dimensions of a given window.
+   * @param dimensions new dimensions of the window.
+   * @param window window object to modify.
+   * @param includeBars if the title and tool bars should be added to the final dimensions.
    */
-  private onAppReady() {
-    this.settings = new VideSettings()
-    this.dimensionService = new DimensionService()
-    this.fileService = new FileService(this.settings)
+  public sizeWindow(
+    dimensions: Size,
+    window: BrowserWindow,
+    includeBars: boolean = true
+  ) {
+    if (!window) return
 
-    this.window = this.createWindow(this.settings)
-
-    this.ipcMainHandler = new IpcMainHandler(
-      ipcMain,
-      this.fileService,
-      this.settings,
-      this.window
-    )
+    window.setBounds({
+      width: dimensions.width,
+      height:
+        dimensions.height +
+        (this.settings && includeBars
+          ? this.settings.get().titleBarHeight +
+            this.settings.get().statusBarHeight
+          : 0),
+    })
   }
 
-  private onWindowAllClosed() {
-    if (process.platform !== 'darwin') this.app.quit()
-  }
-
-  private createWindow(settings: VideSettings): BrowserWindow {
+  private createWindow(): BrowserWindow {
     const w = new BrowserWindow({
-      frame: false,
+      frame: this.settings.get().showDecorations,
       webPreferences: {
         preload: PRELOAD_PATH,
         sandbox: false,
@@ -88,8 +88,8 @@ export class VideWindowController {
       roundedCorners: false,
     })
 
-    var size = settings.get().defaultWindowSize
-    var position = settings.get().defaultWindowLocation
+    var size = this.settings.get().defaultWindowSize
+    var position = this.settings.get().defaultWindowLocation
 
     position =
       this.dimensionService?.pointPercentToAbsolute(position, w) ?? position
@@ -98,16 +98,47 @@ export class VideWindowController {
       mode: 'undocked',
     })
 
-    w.setBounds({
-      width: size.x,
-      height: size.y,
-    })
+    const minSize = this.settings.get().minimumWindowSize
+    w.setMinimumSize(minSize.width, minSize.height)
 
-    VideWindowController.centerWindowAt(position, w)
+    this.sizeWindow(size, w, false)
+    this.centerWindowAt(position, w)
+
+    this.setupWindowListeners(w)
 
     w.loadFile(INDEX_HTML_PATH)
     w.show()
 
     return w
+  }
+
+  private setupWindowListeners(window: BrowserWindow) {
+    const notifyMaximized = () =>
+      this.ipc.maximizedStatusChanged({
+        maximizedStatus: true,
+        window: window,
+      })
+
+    const notifyNotMaximized = () =>
+      this.ipc.maximizedStatusChanged({
+        maximizedStatus: false,
+        window: window,
+      })
+
+    window.on('maximize', () => {
+      notifyMaximized()
+    })
+
+    window.on('resized', () => {
+      notifyNotMaximized()
+    })
+
+    window.on('move', () => {
+      notifyNotMaximized()
+    })
+
+    window.on('unmaximize', () => {
+      notifyNotMaximized()
+    })
   }
 }

@@ -20,12 +20,30 @@ export interface VideSettingsModel {
 
   /**
    * The default size of the window when no image is present.
-   * The size is measured from the left to right, top to bottom, of the window respective to the given x and y values.
+   * The size is measured from the left to right, top to bottom
    * Units of measurement are in pixels.
    */
-  defaultWindowSize: Electron.Point
+  defaultWindowSize: Electron.Size
+  /**
+   * The minimum size of the window.
+   * The size is measured from the left to right, top to bottom
+   * Units of measurement are in pixels.
+   */
+  minimumWindowSize: Electron.Size
+  /**
+   * Height of Vide's title-bar in pixels.
+   */
+  titleBarHeight: number
+  /**
+   * Height of Vide's status-bar in pixels.
+   */
+  statusBarHeight: number
   /**
    * List of allowed extensions for images.
    */
   imageExtensions: string[]
+  /**
+   * If to show the default window decorations of your OS.
+   */
+  showDecorations: boolean
 }

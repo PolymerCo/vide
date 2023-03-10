@@ -1,20 +1,24 @@
-import { IpcInterface } from './ipc-interface'
+import { IpcRendererInterface } from './ipc-renderer-interface'
 
-const IPC_KEY: string = 'ipc'
+const IPC_KEY = 'ipc'
 
 declare global {
   interface Window {
-    ipc: IpcInterface
+    ipc: IpcRendererInterface
   }
 }
 
-const REQUEST_OPEN_FILE: string = 'requestOpenFile'
-const REQUEST_SETTINGS: string = 'requestSettings'
-const WINDOW_MODEL_UPDATED: string = 'windowModelUpdated'
+const REQUEST_OPEN_FILE = 'requestOpenFile'
+const REQUEST_SETTINGS = 'requestSettings'
+const REQUEST_WINDOW_STATE_CHANGE = 'requestWindowStateChange'
+const MAXIMIZED_STATUS_CHANGED = 'fullScreenStatusChanged'
+const REQUEST_FILE_DETAILS = 'requestFileDetails'
 
 export {
   IPC_KEY,
   REQUEST_OPEN_FILE,
   REQUEST_SETTINGS,
-  WINDOW_MODEL_UPDATED as MODEL_UPDATED,
+  REQUEST_WINDOW_STATE_CHANGE,
+  MAXIMIZED_STATUS_CHANGED,
+  REQUEST_FILE_DETAILS,
 }

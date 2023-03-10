@@ -6,8 +6,12 @@ const _defaults: VideSettingsModel = {
     y: 0.5,
   },
   defaultWindowSize: {
-    x: 100,
-    y: 100,
+    width: 250,
+    height: 250,
+  },
+  minimumWindowSize: {
+    width: 150,
+    height: 150,
   },
   imageExtensions: [
     'apng',
@@ -26,6 +30,9 @@ const _defaults: VideSettingsModel = {
     'webp',
     'xmb',
   ],
+  titleBarHeight: 30,
+  statusBarHeight: 25,
+  showDecorations: false,
 }
 
 export default _defaults
