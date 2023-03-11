@@ -11,6 +11,7 @@ import {
   MAXIMIZED_STATUS_CHANGED,
   REQUEST_FILE_DETAILS,
   REQUEST_OPEN_FILE,
+  REQUEST_PLATFORM,
   REQUEST_SETTINGS,
   REQUEST_WINDOW_STATE_CHANGE,
 } from './ipc-constants'
@@ -48,12 +49,10 @@ export class IpcMainHandler implements IpcInterface {
   }
 
   private registerIpc() {
-    this.ipc.handle(REQUEST_OPEN_FILE, (request: IpcMainInvokeEvent) => {
-      return this.requestOpenFile(this.getSenderBrowserWindow(request.sender))
-    })
-    this.ipc.handle(REQUEST_SETTINGS, () => {
-      return this.requestSettings()
-    })
+    this.ipc.handle(REQUEST_OPEN_FILE, (request: IpcMainInvokeEvent) =>
+      this.requestOpenFile(this.getSenderBrowserWindow(request.sender))
+    )
+    this.ipc.handle(REQUEST_SETTINGS, () => this.requestSettings())
     this.ipc.handle(
       REQUEST_WINDOW_STATE_CHANGE,
       (request: IpcMainInvokeEvent, state: WindowStateChange) => {
@@ -69,6 +68,7 @@ export class IpcMainHandler implements IpcInterface {
         return this.requestFileDetails(path)
       }
     )
+    this.ipc.handle(REQUEST_PLATFORM, () => this.requestPlatform())
   }
 
   public requestOpenFile(window: BrowserWindow): Promise<FileSelectionResult> {
@@ -98,6 +98,10 @@ export class IpcMainHandler implements IpcInterface {
 
   public requestFileDetails(path: string): Promise<ImageFileDetails> {
     return this.fileService.requestFileDetails(path)
+  }
+
+  public requestPlatform(): NodeJS.Platform {
+    return process.platform
   }
 
   /**

@@ -13,6 +13,7 @@ const REQUEST_SETTINGS = 'requestSettings'
 const REQUEST_WINDOW_STATE_CHANGE = 'requestWindowStateChange'
 const MAXIMIZED_STATUS_CHANGED = 'fullScreenStatusChanged'
 const REQUEST_FILE_DETAILS = 'requestFileDetails'
+const REQUEST_PLATFORM = 'requestPlatform'
 
 export {
   IPC_KEY,
@@ -21,4 +22,5 @@ export {
   REQUEST_WINDOW_STATE_CHANGE,
   MAXIMIZED_STATUS_CHANGED,
   REQUEST_FILE_DETAILS,
+  REQUEST_PLATFORM,
 }

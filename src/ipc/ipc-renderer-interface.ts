@@ -8,6 +8,7 @@ import {
   REQUEST_OPEN_FILE,
   REQUEST_SETTINGS,
   REQUEST_WINDOW_STATE_CHANGE,
+  REQUEST_PLATFORM,
 } from './ipc-constants'
 import { IpcInterface } from './ipc-interface'
 import { WindowStateChange } from '../vide-window/window-state-change'
@@ -37,6 +38,7 @@ export class IpcRendererInterface implements IpcInterface {
     maximizedStatusChanged: (callback: (state: boolean) => void) =>
       this.maximizedStatusChanged(callback),
     requestFileDetails: (path: string) => this.requestFileDetails(path),
+    requestPlatform: () => this.requestPlatform(),
   }
 
   constructor(ipc: IpcRenderer) {
@@ -74,5 +76,9 @@ export class IpcRendererInterface implements IpcInterface {
 
   public requestFileDetails(path: string): Promise<ImageFileDetails> {
     return this.ipc.invoke(REQUEST_FILE_DETAILS, path)
+  }
+
+  public requestPlatform(): Promise<NodeJS.Platform> {
+    return this.ipc.invoke(REQUEST_PLATFORM)
   }
 }

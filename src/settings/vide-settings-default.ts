@@ -31,7 +31,6 @@ const _defaults: VideSettingsModel = {
     'xmb',
   ],
   titleBarHeight: 30,
-  statusBarHeight: 25,
   showDecorations: false,
 }
 

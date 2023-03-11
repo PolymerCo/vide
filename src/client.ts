@@ -10,10 +10,12 @@ Vue.createApp({
       fileDetails: {} as ImageFileDetails,
       settings: {} as VideSettingsModel,
       isWindowMaximized: false,
+      platform: '',
     }
   },
   async created() {
     this.settings = await window.ipc.requestSettings()
+    this.platform = await window.ipc.requestPlatform()
 
     window.ipc.maximizedStatusChanged(newState => {
       this.isWindowMaximized = newState
@@ -72,6 +74,7 @@ Vue.createApp({
     titleBarStyle() {
       return {
         height: `${this.settings.titleBarHeight}px`,
+        'flex-direction': this.platform == 'darwin' ? 'row-reverse' : 'row',
       }
     },
     contentViewerStyle() {

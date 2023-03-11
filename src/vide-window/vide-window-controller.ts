@@ -58,12 +58,12 @@ export class VideWindowController {
    * Sets the dimensions of a given window.
    * @param dimensions new dimensions of the window.
    * @param window window object to modify.
-   * @param includeBars if the title and tool bars should be added to the final dimensions.
+   * @param includeBar if the title bar should be added to the final dimensions.
    */
   public sizeWindow(
     dimensions: Size,
     window: BrowserWindow,
-    includeBars: boolean = true
+    includeBar: boolean = true
   ) {
     if (!window) return
 
@@ -71,10 +71,7 @@ export class VideWindowController {
       width: dimensions.width,
       height:
         dimensions.height +
-        (this.settings && includeBars
-          ? this.settings.get().titleBarHeight +
-            this.settings.get().statusBarHeight
-          : 0),
+        (this.settings && includeBar ? this.settings.get().titleBarHeight : 0),
     })
   }
 

@@ -35,10 +35,6 @@ export interface VideSettingsModel {
    */
   titleBarHeight: number
   /**
-   * Height of Vide's status-bar in pixels.
-   */
-  statusBarHeight: number
-  /**
    * List of allowed extensions for images.
    */
   imageExtensions: string[]

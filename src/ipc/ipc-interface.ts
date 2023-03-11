@@ -39,4 +39,8 @@ export interface IpcInterface {
    * @param path path of file to get the details of.
    */
   requestFileDetails(path: string): Promise<ImageFileDetails> | ImageFileDetails
+  /**
+   * Request string that identifies the current platform
+   */
+  requestPlatform(): Promise<NodeJS.Platform> | NodeJS.Platform
 }
