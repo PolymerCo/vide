@@ -41,8 +41,17 @@
       <div class='content-viewer' :style='contentViewerStyle' v-else>
         <img :src='validatedFileUrl'/>
       </div>
-      <div class='status-bar' :style='statusBarStyle' v-if='isFileLoaded'>
-        
+      <div class='details-bar' :style='statusBarStyle' v-if='isFileLoaded'>
+        <div class='details file-details' v-if='hasFileDetailsEntries'>
+          <div class='details-entry' v-for='detail in fileDetailsEntries'>
+            {{ detail }}
+          </div>
+        </div>
+        <div class='details camera-details' v-if='hasCameraDetailsEntries'>
+          <div class='details-entry' v-for='detail in cameraDetailsEntries'>
+            {{ detail }}
+          </div>
+        </div>
       </div>
     </div>
   </body>

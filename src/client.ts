@@ -36,11 +36,10 @@ Vue.createApp({
     },
     async actionFilePicked() {
       if (!this.isFileLoaded) return
-      const details = await window.ipc.requestFileDetails(
+
+      this.fileDetails = await window.ipc.requestFileDetails(
         this.validatedFilePath
       )
-      console.log(details)
-      this.fileDetails = details
     },
     requestClose() {
       window.ipc.requestWindowStateChange(WindowStateChange.CLOSE_WINDOW)
@@ -85,6 +84,36 @@ Vue.createApp({
       return {
         height: `${this.settings.statusBarHeight}px`,
       }
+    },
+    fileDetailsEntries(): string[] {
+      const d: ImageFileDetails = this.fileDetails
+      const e: string[] = []
+      if (d.dimensions) e.push(`${d.dimensions.width}x${d.dimensions.height}`)
+      if (d.colorType) e.push(d.colorType)
+      if (d.bitDepth) e.push(`${d.bitDepth}-bit`)
+      return e
+    },
+    hasFileDetailsEntries(): boolean {
+      return this.fileDetailsEntries.length > 0
+    },
+    cameraDetailsEntries(): string[] {
+      const d: ImageFileDetails = this.fileDetails
+      const e: string[] = []
+      if (d.fNumber) e.push(`ƒ/${d.fNumber}`)
+      if (d.focalLength) e.push(`${d.focalLength}mm`)
+      if (d.exposureTime) {
+        if (d.exposureTime > 1) {
+          e.push(window.timeUtil.secondsToReadableTime(d.exposureTime))
+        } else {
+          e.push(`1/${Math.round(1 / d.exposureTime)}`)
+        }
+      }
+      if (d.iso) e.push(`ISO ${d.iso}`)
+
+      return e
+    },
+    hasCameraDetailsEntries(): boolean {
+      return this.fileDetailsEntries.length > 0
     },
   },
 }).mount('#app')

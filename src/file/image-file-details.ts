@@ -3,6 +3,18 @@
  */
 export interface ImageFileDetails {
   /**
+   * Creation date of the file.
+   */
+  creationDate?: Date
+  /**
+   * Modified date of the file.
+   */
+  modifiedDate?: Date
+  /**
+   * Size of the file in bytes.
+   */
+  size?: number
+  /**
    * Dimensions of the image, if found.
    */
   dimensions?: {

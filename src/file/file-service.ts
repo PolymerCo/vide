@@ -5,6 +5,8 @@ import { WindowStateService } from '../vide-window/window-state-service'
 import { ImageFileDetails } from './image-file-details'
 import exifr from 'exifr'
 import { FileSelectionResult } from './file-selection-result'
+import fs = require('fs')
+import imageSize from 'image-size'
 
 /**
  * Service to handle file transactions and selections.
@@ -41,49 +43,13 @@ export class FileService {
 
   /**
    * Retrieve the relevant details of a file
-   * @param filePath file path to get the details of
+   * @param path file path to get the details of
    * @returns the file details
    */
-  public async requestFileDetails(filePath: string): Promise<ImageFileDetails> {
-    const data = await exifr.parse(filePath)
-
-    const details: ImageFileDetails = {}
-
-    const width = data.ImageWidth ?? data.ExifImageWidth ?? null
-
-    if (width) {
-      details.dimensions = {
-        width: width,
-        height: data.ImageHeight ?? data.ExifImageHeight,
-      }
-    }
-
-    if (data.BitDepth) {
-      details.bitDepth = data.BitDepth
-    }
-
-    if (data.ColorType) {
-      details.colorType = data.ColorType
-    }
-
-    if (data.ExposureTime) {
-      details.exposureTime = data.ExposureTime
-    }
-
-    if (data.FNumber) {
-      details.fNumber = data.FNumber
-    }
-
-    if (data.ISO) {
-      details.iso = data.ISO
-    }
-
-    if (data.FocalLength) {
-      details.focalLength = data.FocalLength
-    }
-
-    if (data.LensModel) {
-      details.lens = data.LensModel
+  public async requestFileDetails(path: string): Promise<ImageFileDetails> {
+    const details = {
+      ...(await this.getImageDetails(path)),
+      ...(await this.getFileDetails(path)),
     }
 
     return details
@@ -115,5 +81,80 @@ export class FileService {
         window
       )
     }
+  }
+
+  private async getFileDetails(path: string): Promise<ImageFileDetails> {
+    const p = new Promise<ImageFileDetails>((resolve, reject) => {
+      fs.stat(path, (err, stats) => {
+        if (err) reject(err)
+
+        resolve({
+          creationDate: stats.birthtime,
+          modifiedDate: stats.mtime,
+          size: stats.size,
+        })
+      })
+    })
+
+    return p
+  }
+
+  private async getImageDetails(path: string): Promise<ImageFileDetails> {
+    const data = await exifr.parse(path)
+
+    const details: ImageFileDetails = await new Promise<ImageFileDetails>(
+      (resolve, reject) => {
+        imageSize(path, (e, r) => {
+          if (e) reject(e)
+          else if (!r) reject(`unable to load dimension details for ${path}`)
+          else {
+            if (r.width == null || r.height == null) {
+              reject(`unable to load dimension details for ${path}`)
+            } else {
+              resolve({
+                dimensions: {
+                  width: r.width,
+                  height: r.height,
+                },
+              })
+            }
+          }
+        })
+      }
+    )
+
+    if (data.BitDepth) {
+      details.bitDepth = data.BitDepth
+    }
+
+    if (data.ColorType) {
+      details.colorType = data.ColorType
+
+      if (details.colorType == 'RGB with Alpha') {
+        details.colorType = 'RGBA'
+      }
+    }
+
+    if (data.ExposureTime) {
+      details.exposureTime = data.ExposureTime
+    }
+
+    if (data.FNumber) {
+      details.fNumber = data.FNumber
+    }
+
+    if (data.ISO) {
+      details.iso = data.ISO
+    }
+
+    if (data.FocalLength) {
+      details.focalLength = data.FocalLength
+    }
+
+    if (data.LensModel) {
+      details.lens = data.LensModel
+    }
+
+    return details
   }
 }
