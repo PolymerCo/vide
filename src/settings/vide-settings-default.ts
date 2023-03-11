@@ -32,6 +32,7 @@ const _defaults: VideSettingsModel = {
   ],
   titleBarHeight: 30,
   showDecorations: false,
+  showDevTools: true,
 }
 
 export default _defaults

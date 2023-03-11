@@ -91,9 +91,11 @@ export class VideWindowController {
     position =
       this.dimensionService?.pointPercentToAbsolute(position, w) ?? position
 
-    w.webContents.openDevTools({
-      mode: 'undocked',
-    })
+    if (this.settings.get().showDevTools) {
+      w.webContents.openDevTools({
+        mode: 'undocked',
+      })
+    }
 
     const minSize = this.settings.get().minimumWindowSize
     w.setMinimumSize(minSize.width, minSize.height)

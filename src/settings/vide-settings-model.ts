@@ -42,4 +42,8 @@ export interface VideSettingsModel {
    * If to show the default window decorations of your OS.
    */
   showDecorations: boolean
+  /**
+   * If to show developer tools on load
+   */
+  showDevTools: boolean
 }
