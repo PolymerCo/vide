@@ -7,6 +7,7 @@ import exifr from 'exifr'
 import { FileSelectionResult } from './file-selection-result'
 import fs = require('fs')
 import imageSize from 'image-size'
+import { promisify } from 'util'
 
 /**
  * Service to handle file transactions and selections.
@@ -71,10 +72,24 @@ export class FileService {
         this.getOpenDialogOptions
       )
 
-      return {
+      const result: FileSelectionResult = {
         wasCancelled: canceled,
-        ...(canceled ? {} : { filePath: filePaths[0] }),
       }
+
+      if (!canceled) {
+        const path = filePaths[0]
+
+        result.filePath = path
+        result.data = {
+          details: {
+            ...(await this.getFileDetails(path)),
+            ...(await this.getImageDetails(path)),
+          },
+          fileData: await this.loadImageAsBase64(path),
+        }
+      }
+
+      return result
     } finally {
       this.windowStateService.updateWindowState(
         WindowStateChange.UN_HIDE_WINDOW,
@@ -156,5 +171,26 @@ export class FileService {
     }
 
     return details
+  }
+
+  /**
+   * Load image file as a base64 encoded string
+   * @param path path of the image.
+   * @returns the base64 string
+   */
+  private async loadImageAsBase64(path: string): Promise<string> {
+    if (!path || path.trim().length == 0)
+      throw 'loadImageAsBase64() : missing path'
+
+    const pReadFile = promisify(fs.readFile)
+    const ext = path.split('.').pop()
+
+    if (!ext || ext.length == 0)
+      throw 'loadImageAsBase64() : missing ext on path'
+
+    const bin = await pReadFile(path)
+    const base64 = Buffer.from(bin).toString('base64')
+
+    return `data:image/${ext};charset=utf-8;base64,${base64}`
   }
 }

@@ -1,3 +1,6 @@
+import { ImageFile } from './image-file'
+import { ImageFileDetails } from './image-file-details'
+
 /**
  * Result of a file selection operation.
  */
@@ -10,4 +13,8 @@ export interface FileSelectionResult {
    * Path of the file selected.
    */
   filePath?: string
+  /**
+   * Data associated with the file.
+   */
+  data?: ImageFile
 }
