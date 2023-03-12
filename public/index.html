@@ -39,9 +39,14 @@
         </button>
       </div>
       <div class='content-viewer' :style='contentViewerStyle' v-else>
-        <img :src='validatedFileUrl'/>
+        <img :src='this.fileData' :style='contentImageStyle' draggable='false' />
       </div>
       <div class='details-bar' :style='statusBarStyle' v-if='isFileLoaded'>
+        <div class='details view-details'>
+          <div class='details-entry' v-for='detail in viewDetailsEntries'>
+            {{ detail }}
+          </div>
+        </div>
         <div class='details file-details' v-if='hasFileDetailsEntries'>
           <div class='details-entry' v-for='detail in fileDetailsEntries'>
             {{ detail }}
