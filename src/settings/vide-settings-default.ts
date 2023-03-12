@@ -33,6 +33,14 @@ const _defaults: VideSettingsModel = {
   titleBarHeight: 30,
   showDecorations: false,
   showDevTools: true,
+  zoomSensitivity: 0.008,
+  zoomSensitivityGain: 0.003,
+  maxZoom: 200,
+  minZoom: 0.5,
+  moveSensitivity: 0.15,
+  moveSensitivityLoss: 0.75,
+  moveSensitivityLossThreshold: 15,
+  moveMax: 80,
 }
 
 export default _defaults
