@@ -18,14 +18,14 @@ export class TimeUtil {
     let v: number
     let u: string
 
-    if (seconds < 0.00001) {
-      v = seconds * 1000000
+    if (seconds < 0.0000001) {
+      v = seconds * 1000000000
       u = 'ns'
-    } else if (seconds < 0.001) {
-      v = seconds * 10000
+    } else if (seconds < 0.0001) {
+      v = seconds * 1000000
       u = 'µs'
     } else if (seconds < 0.1) {
-      v = seconds * 100
+      v = seconds * 1000
       u = 'ms'
     } else if (seconds < 60) {
       v = seconds
